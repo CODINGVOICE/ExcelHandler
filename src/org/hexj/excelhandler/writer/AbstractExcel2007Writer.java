@@ -28,13 +28,21 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public abstract class AbstractExcel2007Writer {
 	
 	private SpreadsheetWriter sw;
-
 	/**
 	 * 写入电子表格的主要流程
 	 * @param fileName
 	 * @throws Exception
 	 */
 	public void process(String fileName) throws Exception{
+		FileOutputStream out = new FileOutputStream(fileName);
+		this.process(out);
+	}
+	/**
+	 * 写入电子表格的主要流程
+	 * @param fileName
+	 * @throws Exception
+	 */
+	public void process(OutputStream out) throws Exception{
 		String tmpFileName=UUID.randomUUID()+".xlsx";
 		// 建立工作簿和电子表格对象
 		XSSFWorkbook wb = new XSSFWorkbook();
@@ -56,7 +64,7 @@ public abstract class AbstractExcel2007Writer {
 		
 		// 使用产生的数据替换模板
 		File templateFile = new File(tmpFileName);
-		FileOutputStream out = new FileOutputStream(fileName);
+		
 		substitute(templateFile, tmp, sheetRef.substring(1), out);
 		out.close();
 		//删除文件之前调用一下垃圾回收器，否则无法删除模板文件
