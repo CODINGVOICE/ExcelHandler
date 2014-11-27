@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -28,25 +29,25 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public abstract class AbstractExcel2007Writer {
 	
 	private SpreadsheetWriter sw;
-	/**
-	 * 写入电子表格的主要流程
-	 * @param fileName
-	 * @throws Exception
-	 */
+	
 	public void process(String fileName) throws Exception{
 		FileOutputStream out = new FileOutputStream(fileName);
-		this.process(out);
+		this.process(out,"sheet1");
+	}
+	public void process(String fileName,String sheetName) throws Exception{
+		FileOutputStream out = new FileOutputStream(fileName);
+		this.process(out,sheetName);
 	}
 	/**
 	 * 写入电子表格的主要流程
 	 * @param fileName
 	 * @throws Exception
 	 */
-	public void process(OutputStream out) throws Exception{
+	public void process(OutputStream out,String sheetName) throws Exception{
 		String tmpFileName=UUID.randomUUID()+".xlsx";
 		// 建立工作簿和电子表格对象
 		XSSFWorkbook wb = new XSSFWorkbook();
-		XSSFSheet sheet = wb.createSheet("sheet1");
+		XSSFSheet sheet = wb.createSheet(sheetName);
 		// 持有电子表格数据的xml文件名 例如 /xl/worksheets/sheet1.xml
 		String sheetRef = sheet.getPackagePart().getPartName().getName();
 
@@ -57,7 +58,7 @@ public abstract class AbstractExcel2007Writer {
 		
 		// 生成xml文件
 		File tmp = File.createTempFile("sheet", ".xml");
-		Writer fw = new FileWriter(tmp);
+		Writer fw = new OutputStreamWriter(new FileOutputStream(tmp),"UTF-8");
 		sw = new SpreadsheetWriter(fw);
 		generate();
 		fw.close();
